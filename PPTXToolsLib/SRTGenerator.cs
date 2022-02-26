@@ -238,6 +238,11 @@ namespace PPTXTools
 
             wave.Scan((int)(notes.Length * margin), info.TimeStamp, info.EndTimeStamp); // セリフの分割数以上に音声データが分割されるように指定する
 
+            if(wave.GetRangesSec() == null || wave.GetRangesSec().Length < notes.Length)
+            {
+                return GetNoteToTimestampWithoutWave(info); 
+            }
+
             (float, float)[] target = wave.GetRangesSec()
                 .Where(s => s.Item1 >= info.TimeStamp && s.Item1 <= info.EndTimeStamp)
                 .ToArray();

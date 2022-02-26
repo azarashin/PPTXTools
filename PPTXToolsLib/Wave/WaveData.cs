@@ -23,7 +23,6 @@ namespace PPTXTools.Wave
         private ushort _channels;
         private uint _samplingRate;
         private ushort _bitPerSample;
-        private short[] _data;
 
         private string _path;
 

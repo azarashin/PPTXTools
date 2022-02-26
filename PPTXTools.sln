@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPTXToolsLib", "PPTXToolsLib\PPTXToolsLib.csproj", "{837B6492-EDF1-4451-B621-5E12BA49E5E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRTGenerator", "SRTGenerator\SRTGenerator.csproj", "{E0DD47A3-07F9-457D-92A1-F6C4FED38A71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{837B6492-EDF1-4451-B621-5E12BA49E5E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{837B6492-EDF1-4451-B621-5E12BA49E5E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{837B6492-EDF1-4451-B621-5E12BA49E5E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0DD47A3-07F9-457D-92A1-F6C4FED38A71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0DD47A3-07F9-457D-92A1-F6C4FED38A71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0DD47A3-07F9-457D-92A1-F6C4FED38A71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0DD47A3-07F9-457D-92A1-F6C4FED38A71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -229,6 +229,11 @@ namespace PPTXTools
             string note = Regex.Replace(info.NoteText.Replace("\r", "\n"), "\n\n+", "\n\n");
             string[] notes = note.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
+            if(notes.Length == 0)
+            {
+                return new ((float, float), string)[0]; 
+            }
+
             float margin = 1.5f; 
 
             wave.Scan((int)(notes.Length * margin), info.TimeStamp, info.EndTimeStamp); // セリフの分割数以上に音声データが分割されるように指定する

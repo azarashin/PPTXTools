@@ -21,6 +21,7 @@ namespace PPTXTools
 
         public (int, int)[] Ranges { get; private set; }
         public (float, float)[] RangesSec { get; private set; }
+        public const float MinDurationSec = 1.0f;
 
 
         private float _silentThrethold; // 無音区間かどうかを区別するための閾値
@@ -29,7 +30,7 @@ namespace PPTXTools
         private int _count = 0;
         private int _start = -1;
         private List<(int, int)> _ranges;
-        private float _samplingRate;
+        private uint _samplingRate;
         private Dictionary<float, (int, int)[]> _rangesMap;
         private Dictionary<float, (float, float)[]> _rangesSecMap;
 
@@ -64,11 +65,11 @@ namespace PPTXTools
 
             do
             {
-                silentWeight = speed * count + bias;
+                silentWeight = speed * (maxCount - count) + bias;
                 attr.UpdateSilentParameter(silentWeight);
                 if(!_rangesMap.ContainsKey(silentWeight))
                 {
-                    _rangesMap[silentWeight] = Split(data, attr);
+                    _rangesMap[silentWeight] = Split(data, attr, _samplingRate);
                     _rangesSecMap[silentWeight] = _rangesMap[silentWeight].Select(s => (s.Item1 / (float)_samplingRate, s.Item2 / (float)_samplingRate)).ToArray();
                 }
                 Ranges = _rangesMap[silentWeight];
@@ -77,7 +78,7 @@ namespace PPTXTools
                 targetCount = RangesSec
                     .Where(s => s.Item1 >= start && s.Item2 <= end)
                     .Count();
-            } while (targetCount < expectedLength && count < maxCount);
+            } while (targetCount < expectedLength && count <= maxCount);
 
             return Ranges.Length; 
         }
@@ -129,7 +130,7 @@ namespace PPTXTools
             }
         }
 
-        private (int, int)[] Split(WaveData data, WaveAttribute attr)//(short[] sample, int frameRate)
+        private (int, int)[] Split(WaveData data, WaveAttribute attr, uint samplingRate)
         {
             _keep = 0;
             _mode = false;
@@ -142,7 +143,7 @@ namespace PPTXTools
 
             data.Scan(ScanSplitParameter);
 
-
+            _ranges = _ranges.Where(s => s.Item2 - s.Item1 > MinDurationSec * samplingRate).ToList(); 
 
 
             if (_ranges.Count() == 0)

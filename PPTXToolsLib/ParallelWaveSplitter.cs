@@ -39,7 +39,7 @@ namespace PPTXTools
             WaveAttribute attr = new WaveAttribute(data);
 
             _subAnalyzers = new List<ParallelWaveAnalyzerSub>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 10; i >= 0; i--)
             {
                 float silentWeight = speed * i + bias;
                 attr.UpdateSilentParameter(silentWeight);
@@ -101,6 +101,8 @@ namespace PPTXTools
 
         private class ParallelWaveAnalyzerSub
         {
+            public const float MinDurationSec = 1.0f;
+
             private string _path;
 
             private float _silentThrethold;
@@ -109,7 +111,7 @@ namespace PPTXTools
             private int _count = 0;
             private int _start = -1;
             private List<(int, int)> _ranges;
-            private float _samplingRate;
+            private uint _samplingRate;
 
             internal (float, float)[] RangesSec { get; private set; }
 
@@ -137,6 +139,8 @@ namespace PPTXTools
             internal int ScanPostProcess()
             {
                 (int, int)[] ranges;
+
+                _ranges = _ranges.Where(s => s.Item2 - s.Item1 > MinDurationSec * _samplingRate).ToList();
 
                 if (_ranges.Count() == 0)
                 {

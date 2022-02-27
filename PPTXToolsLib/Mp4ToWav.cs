@@ -21,10 +21,9 @@ namespace PPTXTools
         /// <returns></returns>
         public static void ConvertMp4ToWav(string path, string outPath)
         {
-            string out_path = "./_tmp.wav";
-            if(File.Exists(out_path))
+            if(File.Exists(outPath))
             {
-                File.Delete(out_path); 
+                File.Delete(outPath); 
             }
             Process p = Process.Start("ffmpeg", $"-i \"{path}\" \"{outPath}\"");
             p.WaitForExit(); 

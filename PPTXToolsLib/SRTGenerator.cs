@@ -246,7 +246,7 @@ namespace PPTXTools
                 return new ((float, float), string)[0]; 
             }
 
-            float margin = 1.5f; 
+            float margin = 1.2f; 
 
             wave.Scan((int)(notes.Length * margin), info.TimeStamp, info.EndTimeStamp); // セリフの分割数以上に音声データが分割されるように指定する
 

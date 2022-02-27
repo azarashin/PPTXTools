@@ -34,7 +34,16 @@ namespace PPTXTools
         /// スライドに付与されたノートテキスト
         /// </summary>
         public string NoteText { get; private set; }
+
+        /// <summary>
+        /// スライド番号（先頭の番号は1）
+        /// </summary>
         public int PageNumber { get; private set; }
+
+        /// <summary>
+        /// スライド非表示かどうか
+        /// </summary>
+        public bool Hidden { get; private set; }
 
         /// <summary>
         /// コンストラクタ
@@ -44,7 +53,8 @@ namespace PPTXTools
         public PPTXSlide(int pageNumber, Slide slide, float timeStampOrigin)
         {
             TimeStamp = timeStampOrigin;
-            PageNumber = pageNumber; 
+            PageNumber = pageNumber;
+            Hidden = (slide.SlideShowTransition.Hidden == MsoTriState.msoTrue); 
             EndTimeStamp = timeStampOrigin + slide.SlideShowTransition.AdvanceTime;
 
             TextContents = Enumerable.Range(0, slide.Shapes.Count)

@@ -226,11 +226,15 @@ namespace PPTXTools
 
         private ((float, float), string)[] GetNoteToTimestamp(PPTXSlide info, IWaveSplitter wave)
         {
+            if(info.Hidden)
+            { // 非表示スライドの場合
+                return new ((float, float), string)[0];
+            }
             if (info.TimeStamp == info.EndTimeStamp)
             {
                 // 記録のないスライドが含まれている場合、パワポと動画でタイムスタンプがずれる
                 // 問題があるため（パワポ側の問題なので問題回避不可）、
-                // エラーメッセージを出す。
+                // エラーメッセージを出す(非表示スライドは対象外)。
                 throw new NoRecordSlideException(info.PageNumber);
             }
 

@@ -226,6 +226,14 @@ namespace PPTXTools
 
         private ((float, float), string)[] GetNoteToTimestamp(PPTXSlide info, IWaveSplitter wave)
         {
+            if (info.TimeStamp == info.EndTimeStamp)
+            {
+                // 記録のないスライドが含まれている場合、パワポと動画でタイムスタンプがずれる
+                // 問題があるため（パワポ側の問題なので問題回避不可）、
+                // エラーメッセージを出す。
+                throw new NoRecordSlideException(info.PageNumber);
+            }
+
             string note = Regex.Replace(info.NoteText.Replace("\r", "\n"), "\n\n+", "\n\n");
             string[] notes = note.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 

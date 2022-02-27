@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="IWaveSplitter.cs" />
     <Compile Include="Mp4ToWav.cs" />
+    <Compile Include="NoRecordSlideException.cs" />
     <Compile Include="ParallelWaveSplitter.cs" />
     <Compile Include="PPTXSlide.cs" />
     <Compile Include="PPTXLoader.cs" />

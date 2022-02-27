@@ -29,7 +29,7 @@ namespace PPTXTools
             for (int i = 0; i < file.Slides.Count; i++)
             {
                 Slide slide = file.Slides[i + 1]; // スライドのIDは1から始まる（０からではない…）
-                PPTXSlides[i] = new PPTXSlide(slide, pre);
+                PPTXSlides[i] = new PPTXSlide(i+1, slide, pre);
                 pre = PPTXSlides[i].EndTimeStamp;
             }
         }

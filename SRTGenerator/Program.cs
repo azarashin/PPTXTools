@@ -65,7 +65,15 @@ namespace PPTXTools
             Console.WriteLine("... 字幕ファイルを生成しています...");
             try
             {
-                gen = new SRTGenerator(loader, ana);
+                try
+                {
+                    gen = new SRTGenerator(loader, ana);
+                }
+                catch (NoRecordSlideException ex)
+                {
+                    Console.WriteLine(ex);
+                    return; 
+                }
             }
             catch (Exception ex)
             {

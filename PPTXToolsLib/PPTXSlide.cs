@@ -34,15 +34,17 @@ namespace PPTXTools
         /// スライドに付与されたノートテキスト
         /// </summary>
         public string NoteText { get; private set; }
+        public int PageNumber { get; private set; }
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="slide">スライド情報</param>
         /// <param name="timeStampOrigin">スライドの開始タイミング(秒)</param>
-        public PPTXSlide(Slide slide, float timeStampOrigin)
+        public PPTXSlide(int pageNumber, Slide slide, float timeStampOrigin)
         {
             TimeStamp = timeStampOrigin;
+            PageNumber = pageNumber; 
             EndTimeStamp = timeStampOrigin + slide.SlideShowTransition.AdvanceTime;
 
             TextContents = Enumerable.Range(0, slide.Shapes.Count)

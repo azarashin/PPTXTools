@@ -259,7 +259,7 @@ namespace PPTXTools
                 .Where(s => s.Item1 >= info.TimeStamp && s.Item1 <= info.EndTimeStamp)
                 .ToArray();
             ((float, float), float)[] rateMapWave = target
-                .Select(s => ((s.Item1, s.Item2), (s.Item1 - info.TimeStamp) / (info.EndTimeStamp - info.TimeStamp))).ToArray();
+                .Select(s => ((s.Item1, s.Item2), (s.Item1 - target.First().Item1) / (target.Last().Item2 - target.First().Item1))).ToArray();
 
             List<(int, string)> noteAt = new List<(int, string)>();
             noteAt.Add((0, notes[0]));

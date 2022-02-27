@@ -60,6 +60,8 @@
     <Compile Include="PPTXSlide.cs" />
     <Compile Include="PPTXLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Python\PytohnInaSpeechSegmenter.cs" />
+    <Compile Include="Python\PytohnInaSpeechSegmenterException.cs" />
     <Compile Include="SRTGenerator.cs" />
     <Compile Include="TextWrapper.cs" />
     <Compile Include="WaveSplitter.cs" />

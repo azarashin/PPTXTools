@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PPTXTools.Python;
+using System;
 
 namespace PPTXTools
 {
@@ -48,17 +49,27 @@ namespace PPTXTools
             }
             Console.WriteLine("... パワーポイントを読み込みました...");
 
-            //IWaveAnalyzer ana = new WaveAnalyzer(wav_path);
             Console.WriteLine("... 音声ファイルを読み込んでいます...");
             try
             {
-                ana = new ParallelWaveSplitter(wavPath);
+                ana = new PytohnInaSpeechSegmenter(wavPath);
             }
-            catch (Exception ex)
+            catch (PytohnInaSpeechSegmenterException ex)
             {
-                Console.WriteLine("! 音声ファイルの読み込みに失敗しました");
-                Console.WriteLine(ex.ToString());
-                return;
+                Console.WriteLine(ex);
+                Console.WriteLine("pytohn のInaSpeechSegmenter の実行に失敗しました。");
+                Console.WriteLine("簡易式の音区間検出アルゴリズムに切り替えます。");
+                try
+                {
+                    // ana = new WaveAnalyzer(wav_path);
+                    ana = new ParallelWaveSplitter(wavPath);
+                }
+                catch (Exception ex2)
+                {
+                    Console.WriteLine("! 音声ファイルの読み込みに失敗しました");
+                    Console.WriteLine(ex2.ToString());
+                    return;
+                }
             }
             Console.WriteLine("... 音声ファイルを読み込みました...");
 

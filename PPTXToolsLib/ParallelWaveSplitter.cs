@@ -18,7 +18,6 @@ namespace PPTXTools
     /// </summary>
     public class ParallelWaveSplitter : IWaveSplitter
     {
-        public (int, int)[] Ranges { get; private set; }
         public (float, float)[] RangesSec { get; private set; }
 
         private string _path;
@@ -65,7 +64,6 @@ namespace PPTXTools
         /// <returns>抽出された有音区間の数</returns>
         public int Scan(int expectedLength, float start, float end)
         {
-            Ranges = null;
             RangesSec = null; 
             foreach (var sub in _subAnalyzers)
             {
@@ -78,11 +76,8 @@ namespace PPTXTools
                     break;
                 }
             }
-            if(Ranges == null)
-            {
-                return 0;
-            }
-            return Ranges.Length; 
+
+            return RangesSec.Length; 
         }
 
         private void ScanSplitParameter(ushort channels, uint samplingRate, ushort bitPerSample, short[] data)

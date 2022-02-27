@@ -23,7 +23,7 @@ namespace PPTXTools
         {
             var ppt = new Application();
             var pres = ppt.Presentations;
-            Presentation file = pres.Open(path, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
+            Presentation file = pres.Open(path, MsoTriState.msoTrue, MsoTriState.msoFalse, MsoTriState.msoFalse);
             PPTXSlides = new PPTXSlide[file.Slides.Count];
             float pre = 0.0f;
             for (int i = 0; i < file.Slides.Count; i++)

@@ -194,9 +194,18 @@ namespace PPTXTools
             return all.First();
         }
 
+        private string RemoveNoteNoise(string note)
+        {
+            note = string.Join("\n", note
+                .Replace("\r", "\n")
+                .Split('\n')
+                .Select(s => Regex.Replace(s, "#.*$", "").Trim())); // # で始まるコメントを除去
+            return Regex.Replace(note, "\n\n+", "\n\n"); 
+        }
+
         private ((float, float), string)[] GetNoteToTimestampWithoutWave(PPTXSlide info)
         {
-            string note = Regex.Replace(info.NoteText.Replace("\r", "\n"), "\n\n+", "\n\n");
+            string note = RemoveNoteNoise(info.NoteText);
             string[] notes = note
                 .Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Replace("\n", ""))
@@ -238,7 +247,7 @@ namespace PPTXTools
                 throw new NoRecordSlideException(info.PageNumber);
             }
 
-            string note = Regex.Replace(info.NoteText.Replace("\r", "\n"), "\n\n+", "\n\n");
+            string note = RemoveNoteNoise(info.NoteText);
             string[] notes = note.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             if(notes.Length == 0)
@@ -283,18 +292,10 @@ namespace PPTXTools
                 return GetNoteToTimestamp(target, notes);
             }
 
-            // 音声検出による話し始めと話し終わりの位置になるように、単語列による相対位置情報を補正する
-            float wavStart = target.First().Item1;
-            float wavEnd = target.Last().Item2;
-            float wordStart = info.TimeStamp;
-            float wordEnd = info.EndTimeStamp;
-            float adjustBias = (wavStart - wordStart) / (wordEnd - wordStart);
-            float adjustScale = (wavEnd - wordStart) / (wordEnd - wordStart);
-
 
             ((float, float), string)[] noteToTimestamp = rateMapNote
                 .Take(rateMapNote.Length - 1) // 番兵は除去する
-                .Select(s => (NearestTimestampWithRate(rateMapWave, Adjust(s.Item2, adjustScale, adjustBias)), s.Item1)).ToArray();
+                .Select(s => (NearestTimestampWithRate(rateMapWave, s.Item2), s.Item1)).ToArray();
             for (int i = 1; i < noteToTimestamp.Length; i++)
             {
                 if (noteToTimestamp[i].Item1.Item1 <= noteToTimestamp[i - 1].Item1.Item1)
@@ -319,11 +320,6 @@ namespace PPTXTools
             }
             noteToTimestamp[noteToTimestamp.Length - 1].Item1.Item2 = info.EndTimeStamp; 
             return noteToTimestamp; 
-        }
-
-        private float Adjust(float source, float scale, float bias)
-        {
-            return source * scale + bias; 
         }
 
         private ((float, float), string)[] GetNoteToTimestamp((float, float)[] target, string[] notes)

@@ -54,8 +54,14 @@ namespace PPTXTools
         {
             TimeStamp = timeStampOrigin;
             PageNumber = pageNumber;
-            Hidden = (slide.SlideShowTransition.Hidden == MsoTriState.msoTrue); 
-            EndTimeStamp = timeStampOrigin + slide.SlideShowTransition.AdvanceTime;
+            Hidden = (slide.SlideShowTransition.Hidden == MsoTriState.msoTrue);
+            if (!Hidden)
+            {
+                EndTimeStamp = timeStampOrigin + slide.SlideShowTransition.AdvanceTime + slide.SlideShowTransition.Duration;
+            } else
+            {
+                EndTimeStamp = timeStampOrigin;
+            }
 
             TextContents = Enumerable.Range(0, slide.Shapes.Count)
                 .Where(s => slide.Shapes[s + 1].HasTextFrame != 0)

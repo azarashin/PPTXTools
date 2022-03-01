@@ -35,7 +35,7 @@ namespace PPTXTools
         /// <param name="wave">音声ファイルのパス</param>
         public SRTGenerator(PPTXLoader pptx, IWaveSplitter wave)
         {
-            _wrapper = new TextWrapper();
+            _wrapper = new TextWrapper(pptx.NoLineBreakBefore);
             _tagger = MeCabTagger.Create();
             _lengthOfNumber = new int[] { 2, 2, 1, 2, 2, 1, 2, 2, 2, 2 };
 

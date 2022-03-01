@@ -16,15 +16,20 @@ namespace PPTXTools
         public const int MaxLength = 40; // 字幕の一行当たりの最大文字数
         public const int MinLength = 32; // 字幕の一行当たりの最小文字数
         private MeCabTagger _tagger;
-        private StreamWriter _swDebug; 
+        private StreamWriter _swDebug;
+        private string[] postCharactors = new string[] { "、", "。", "」", "】", "』", ")", "）", ">", "＞", "》", "≫", "〕", "］", "｝" };
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public TextWrapper()
+        public TextWrapper(string noLineBreakBefore)
         {
             _tagger = MeCabTagger.Create();
             _swDebug = null; // new StreamWriter("log.txt");
+            if(noLineBreakBefore != null && noLineBreakBefore != "")
+            {
+                postCharactors = Enumerable.Range(0, noLineBreakBefore.Length).Select(s => noLineBreakBefore.Substring(s, 1)).ToArray();
+            }
         }
 
         /// <summary>
@@ -145,7 +150,6 @@ namespace PPTXTools
             float periodScore = 20.0f;
             float auxiliaryPenalty = 5.0f; // 後半が助詞・助動詞になるところで改行されたときのペナルティ
             float separatedNounsPenalty = 2.0f; // 名詞が続くところで改行されたときのペナルティ
-            string[] postCharactors = new string[] { "、", "。", "」", "】", "』", ")", "）", ">", "＞", "》", "≫", "〕", "］", "｝" }; 
 
             if(lengthes.Any(s => (s > MaxLength)))
             {

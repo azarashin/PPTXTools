@@ -16,6 +16,11 @@ namespace PPTXTools
         public PPTXSlide[] PPTXSlides { get; private set; } 
 
         /// <summary>
+        /// 禁則処理
+        /// </summary>
+        public string NoLineBreakBefore { get; private set; }
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="path">パワーポイントのファイルのパス</param>
@@ -32,6 +37,7 @@ namespace PPTXTools
                 PPTXSlides[i] = new PPTXSlide(i+1, slide, pre);
                 pre = PPTXSlides[i].EndTimeStamp;
             }
+            NoLineBreakBefore = file.NoLineBreakBefore;
         }
 
         /// <summary>

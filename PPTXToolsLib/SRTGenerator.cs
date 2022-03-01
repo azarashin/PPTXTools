@@ -338,9 +338,15 @@ namespace PPTXTools
 
             for (int i = 0; i < noteToTimestamp.Length - 1; i++)
             {
-                noteToTimestamp[i].Item1.Item2 = noteToTimestamp[i + 1].Item1.Item1; 
+                if(noteToTimestamp[i].Item1.Item2 < noteToTimestamp[i + 1].Item1.Item1)
+                {
+                    noteToTimestamp[i].Item1.Item2 = noteToTimestamp[i + 1].Item1.Item1;
+                }
             }
-            noteToTimestamp[noteToTimestamp.Length - 1].Item1.Item2 = info.EndTimeStamp; 
+            if(noteToTimestamp[noteToTimestamp.Length - 1].Item1.Item2 < info.EndTimeStamp)
+            {
+                noteToTimestamp[noteToTimestamp.Length - 1].Item1.Item2 = info.EndTimeStamp;
+            }
             return noteToTimestamp; 
         }
 

@@ -99,5 +99,16 @@ namespace PPTXTools
             ret += $"--- COMMENT ---\n{NoteText}\n";
             return ret; 
         }
+
+        private float SumOfTimelineDuration(Slide slide)
+        {
+            int countMain = slide.TimeLine.MainSequence.Count;
+            float sum = 0.0f; 
+            for(int i=0;i<countMain;i++)
+            {
+                sum += slide.TimeLine.MainSequence[i + 1].Timing.Duration;
+            }
+            return sum; 
+        }
     }
 }

@@ -67,6 +67,28 @@ namespace PPTXTools
             }
         }
 
+        /// <summary>
+        /// WebVTTファイルに字幕データを出力する
+        /// </summary>
+        /// <param name="path">出力先のパス</param>
+        public void DumpVTT(string path)
+        {
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                sw.WriteLine($"WEBVTT");
+                sw.WriteLine();
+
+                int id = 0;
+                foreach (((float, float) duration, string note) in NoteToTimestamp)
+                {
+                    sw.WriteLine($"{id}");
+                    sw.WriteLine($"{SecToSRTTime(duration.Item1)} --> {SecToSRTTime(duration.Item2)}");
+                    sw.WriteLine($"{_wrapper.Wrap(note)}\n");
+                    id++;
+                }
+            }
+        }
+
 
         private int LengthOfWordPronounsation(string word)
         {

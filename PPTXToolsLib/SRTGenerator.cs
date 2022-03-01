@@ -263,9 +263,7 @@ namespace PPTXTools
             }
             if (info.TimeStamp == info.EndTimeStamp)
             {
-                // 記録のないスライドが含まれている場合、パワポと動画でタイムスタンプがずれる
-                // 問題があるため（パワポ側の問題なので問題回避不可）、
-                // エラーメッセージを出す(非表示スライドは対象外)。
+                // 非表示スライドでもないのにタイムスタンプの区間長がゼロの場合はありえないはず。
                 throw new NoRecordSlideException(info.PageNumber);
             }
 

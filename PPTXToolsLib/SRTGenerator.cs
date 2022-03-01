@@ -281,7 +281,7 @@ namespace PPTXTools
 
             wave.Scan((int)(notes.Length * margin), info.TimeStamp, info.EndTimeStamp); // セリフの分割数以上に音声データが分割されるように指定する
 
-            if(wave.GetRangesSec() == null || wave.GetRangesSec().Length < notes.Length)
+            if(wave.GetRangesSec() == null)
             {
                 return GetNoteToTimestampWithoutWave(info); 
             }

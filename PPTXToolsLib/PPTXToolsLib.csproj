@@ -57,6 +57,7 @@
     <Compile Include="Mp4ToWav.cs" />
     <Compile Include="NoRecordSlideException.cs" />
     <Compile Include="ParallelWaveSplitter.cs" />
+    <Compile Include="PPTXErrorChecker.cs" />
     <Compile Include="PPTXSlide.cs" />
     <Compile Include="PPTXLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

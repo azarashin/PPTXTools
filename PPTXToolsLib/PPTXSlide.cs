@@ -100,6 +100,12 @@ namespace PPTXTools
             return ret; 
         }
 
+        public void Adjust(float pptxLength, float waveLength)
+        {
+            TimeStamp *= waveLength / pptxLength;
+            EndTimeStamp *= waveLength / pptxLength;
+        }
+
         private float SumOfTimelineDuration(Slide slide)
         {
             int countMain = slide.TimeLine.MainSequence.Count;
@@ -110,5 +116,6 @@ namespace PPTXTools
             }
             return sum; 
         }
+
     }
 }

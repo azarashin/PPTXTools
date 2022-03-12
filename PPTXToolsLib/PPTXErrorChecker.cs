@@ -1,4 +1,6 @@
-﻿using Microsoft.Office.Interop.PowerPoint;
+﻿using Microsoft.Office.Core;
+using Microsoft.Office.Interop.PowerPoint;
+using PPTXTools.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +9,38 @@ using System.Threading.Tasks;
 
 namespace PPTXTools
 {
-    class PPTXErrorChecker
+    public class PPTXErrorChecker
     {
-        string _message = ""; 
+        string _message = "";
+        float _totalWaveLength; 
 
-        public PPTXErrorChecker(Presentation data)
+        public float TotalWaveLength()
         {
+            return _totalWaveLength; 
+        }
+
+        public PPTXErrorChecker(string path, string wavePath)
+        {
+            _totalWaveLength = 0.0f;
+            WaveData wd = new WaveData(wavePath);
+            wd.Scan(WaveScan);
+
+            var ppt = new Application();
+            var pres = ppt.Presentations;
+            Presentation data = pres.Open(path, MsoTriState.msoTrue, MsoTriState.msoFalse, MsoTriState.msoFalse);
+
             _message = ""; 
             _message += MayBeInvalidAdvanceTime(data);
-            _message += ContainsMediaAnimation(data); 
+            _message += ContainsMediaAnimation(data);
+
+
+
+        }
+
+        private void WaveScan(ushort channels, uint samplingRate, ushort bitPerSample, short[] data)
+        {
+            float dur = (data.Length / channels) / (float)samplingRate;
+            _totalWaveLength += dur; 
         }
 
         public override string ToString()
@@ -26,12 +51,16 @@ namespace PPTXTools
         private string ContainsMediaAnimation(Presentation data)
         {
             string ret = "";
-            Dictionary<int, int> count = new Dictionary<int, int>(); 
+            float totalDuration = 0.0f; 
+            Dictionary<int, int> count = new Dictionary<int, int>();
+            Dictionary<string, float> timeline = new Dictionary<string, float>(); 
+            timeline["1"] = 0.0f; 
             for (int i = 0; i < data.Slides.Count; i++)
             {
                 Slide slide = data.Slides[i + 1];
                 count[i + 1] = 0;
-                for(int j = 0;j < slide.TimeLine.MainSequence.Count;j++)
+                float transDuration = slide.SlideShowTransition.AdvanceTime + slide.SlideShowTransition.Duration;
+                for (int j = 0;j < slide.TimeLine.MainSequence.Count;j++)
                 {
                     MsoAnimEffect type = slide.TimeLine.MainSequence[j + 1].EffectType; 
                     float animDuration = slide.TimeLine.MainSequence[j + 1].Timing.Duration; 
@@ -40,13 +69,22 @@ namespace PPTXTools
                         || type == MsoAnimEffect.msoAnimEffectMediaPlayFromBookmark
                         || type == MsoAnimEffect.msoAnimEffectMediaStop)
                     {
-                        float transDuration = slide.SlideShowTransition.AdvanceTime + slide.SlideShowTransition.Duration;
                         if (transDuration < animDuration)
                         {
-                            count[i + 1]++;
+                            count[i + 2]++;
                         }
                     }
                 }
+                float next = timeline.Last().Value + transDuration;
+                if(i < data.Slides.Count - 1)
+                {
+                    timeline[$"{i + 2}"] = next;
+                }
+                else
+                {
+                    timeline[$"Last"] = next;
+                }
+                totalDuration += transDuration;
             }
             count = count
                 .Where(s => s.Value > 0)
@@ -58,10 +96,33 @@ namespace PPTXTools
                     "これらのアニメーション制御により、動画生成時に不要な画像フレームが生成され、字幕のタイミングをずらす恐れがあります。\n";
                 ret += string.Join(",", count.Select(s => $"スライド番号[{s.Key}]:{s.Value}箇所\n"));
             }
+
+            float thresholdDuration = 0.1f; 
+            if(Math.Abs(_totalWaveLength - totalDuration) / data.Slides.Count > thresholdDuration)
+            {
+                ret += $"\n★警告：パワポの合計再生時間と動画の再生時間とが乖離しています。\n" +
+                    $"メディアの再生終了タイミングが画面切り替えのタイミングよりも後になっている可能性があります。\n" +
+                    $"パワポのスライドショーを実行し、スライドの再生が終わっているのにページが切り替わっていないケースがないかどうかを確認してください。\n" +
+                    $"スライドの枚数: {data.Slides.Count}\n" +
+                    $"パワポの合計再生時間：{totalDuration}\n" +
+                    $"動画の再生時間：{_totalWaveLength}\n" +
+                    $"\n";
+                ret += string.Join(",", timeline.Select(s => $"スライド番号[{s.Key}]:{TimeString(s.Value)}\n"));
+            }
+
             return ret; 
         }
 
-            private string MayBeInvalidAdvanceTime(Presentation data)
+        private string TimeString(float sec)
+        {
+            int hours = (int)(sec / 3600);
+            int minutes = (int)(sec / 60) - hours * 60;
+            float seconds = sec - hours * 3600 - minutes * 60;
+            return $"{hours}:{minutes}:{seconds}";
+
+        }
+
+        private string MayBeInvalidAdvanceTime(Presentation data)
         {
             string ret = "";
             List<int> noAdvanceOnTime = new List<int>(); 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PPTXTools
@@ -22,7 +23,7 @@ namespace PPTXTools
         /// <summary>
         /// 改行までの最大文字数
         /// </summary>
-        public const int WrapLength = 40; 
+        public const int WrapLength = 36; 
 
         private MeCabTagger _tagger;
         private TextWrapper _wrapper; 
@@ -48,19 +49,44 @@ namespace PPTXTools
             NoteToTimestamp = duration_notes.OrderBy(s => s.Item1.Item1).ToArray();
         }
 
+        private float MovieLength(string moviePath)
+        {
+            WMPLib.WindowsMediaPlayer mediaPlayer = new WMPLib.WindowsMediaPlayer();
+            mediaPlayer.URL = moviePath;
+            int maxRetry = 100;
+            int count = 0;
+            while (mediaPlayer.currentMedia.duration == 0.0 && count < maxRetry)
+            {
+                Thread.Sleep(100);
+                count++; 
+            }
+            mediaPlayer.controls.stop(); 
+            if (count >= maxRetry)
+            {
+                throw new NoMediaException();
+            }
+            float movieLength = (float)mediaPlayer.currentMedia.duration;
+            mediaPlayer.URL = null;
+            return movieLength; 
+        }
+
         /// <summary>
         /// SRTファイルに字幕データを出力する
         /// </summary>
         /// <param name="path">出力先のパス</param>
-        public void DumpSRT(string path)
+        public void DumpSRT(string path, string moviePath, float waveLength)
         {
+            float movieLength = MovieLength(moviePath);
+
+            float scale = movieLength / waveLength; 
+
             using (StreamWriter sw = new StreamWriter(path))
             {
                 int id = 0;
                 foreach (((float, float) duration, string note) in NoteToTimestamp)
                 {
                     sw.WriteLine($"{id}");
-                    sw.WriteLine($"{SecToSRTTime(duration.Item1)} --> {SecToSRTTime(duration.Item2)}");
+                    sw.WriteLine($"{SecToSRTTime(duration.Item1 * scale)} --> {SecToSRTTime(duration.Item2 * scale)}");
                     sw.WriteLine($"{_wrapper.Wrap(note)}\n");
                     id++;
                 }

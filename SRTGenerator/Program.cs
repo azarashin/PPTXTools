@@ -17,12 +17,15 @@ namespace PPTXTools
 
             Console.WriteLine("*** パワーポイント(.pptx)のファイルのパスを入力してください");
             pptxPath = Console.ReadLine().Trim();
+//            pptxPath = @"F:\MyDevelopment\PPTXTools\doc\Demo.pptx";
 
             Console.WriteLine("*** パワーポイントから生成された動画ファイル(.mp4)のファイルのパスを入力してください");
             mp4Path = Console.ReadLine().Trim();
+//            mp4Path = @"F:\MyDevelopment\PPTXTools\doc\Demo.mp4";
 
             Console.WriteLine("*** 出力先の字幕ファイル(.srt)のパスを入力してください");
             srtPath = Console.ReadLine().Trim();
+//            srtPath = @"F:\MyDevelopment\PPTXTools\doc\Demo.srt";
 
             Console.WriteLine("... mp4 を音声データ(.wav)に変換しています...");
             try
@@ -47,7 +50,13 @@ namespace PPTXTools
                 Console.WriteLine(ex.ToString());
                 return;
             }
+
             Console.WriteLine("... パワーポイントを読み込みました...");
+
+            Console.WriteLine("... パワーポイントのエラーチェックを開始します...");
+            PPTXErrorChecker pptxErrorChecker = new PPTXErrorChecker(pptxPath, wavPath); 
+            Console.WriteLine(pptxErrorChecker);
+            Console.WriteLine("... パワーポイントのエラーチェックを完了しました...");
 
             Console.WriteLine("... 音声ファイルを読み込んでいます...");
             try
@@ -78,6 +87,7 @@ namespace PPTXTools
             {
                 try
                 {
+                    loader.Adjust(mp4Path, pptxErrorChecker.TotalWaveLength()); 
                     gen = new SRTGenerator(loader, ana);
                 }
                 catch (NoRecordSlideException ex)
@@ -97,7 +107,7 @@ namespace PPTXTools
             Console.WriteLine("... 字幕ファイルを保存しています...");
             try
             {
-                gen.DumpSRT(srtPath);
+                gen.DumpSRT(srtPath, mp4Path, pptxErrorChecker.TotalWaveLength());
             }
             catch (Exception ex)
             {

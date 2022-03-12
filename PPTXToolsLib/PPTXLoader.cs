@@ -30,8 +30,6 @@ namespace PPTXTools
             var pres = ppt.Presentations;
             Presentation file = pres.Open(path, MsoTriState.msoTrue, MsoTriState.msoFalse, MsoTriState.msoFalse);
 
-            Console.WriteLine(new PPTXErrorChecker(file));
-
             PPTXSlides = new PPTXSlide[file.Slides.Count];
             float pre = 0.0f;
             for (int i = 0; i < file.Slides.Count; i++)
@@ -50,6 +48,15 @@ namespace PPTXTools
         public override string ToString()
         {
             return string.Join("\n\n", PPTXSlides.Select(s => $"===== SLIDE ======\n{s}\n"));
+        }
+
+        public void Adjust(string mediaPath, float waveLength)
+        {
+            float pptxLength = PPTXSlides.Last().EndTimeStamp - PPTXSlides.First().TimeStamp;
+            foreach(var slide in PPTXSlides)
+            {
+                slide.Adjust(pptxLength, waveLength); 
+            }
         }
     }
 }
